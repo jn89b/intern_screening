@@ -7,28 +7,28 @@
 float CAPTURE_DISTANCE = 2.0;
 float EVADER_VELOCITY = 5.0;
 
-
-//// IMPLEMENTATION ////
+//// -------------- IMPLEMENTATION -------------------------------- ////
 // Implement the pure pursuit algorithm
-std::vector<float> pure_pursuit_algorithm(std::vector<float> evader_position, 
+std::vector<float> pure_pursuit_algorithm(
+    std::vector<float> evader_position, 
     std::vector<float> pursuer_position, float dt)
 {
+    float vel_cmd = 10.0;
     float heading_cmd = 0.0;
-    float vel_cmd = 5.0;
-
-    return {heading_cmd, vel_cmd};
+    // Calculate the heading command keep velocity constant
+    return {vel_cmd, heading_cmd};
 }
 
 // Compute the distance between two points and returns true if within CAPTURE_DISTANCE
-bool is_captured(std::vector<float> evader_position, 
+bool is_close(std::vector<float> evader_position, 
     std::vector<float> pursuer_position, float capture_distance)
 {
     float distance = 100.0;
-    return distance < capture_distance;
+    return false;
 }
 
 
-/// Helper functions ///    
+/// --------------Helper functions ----------------------------------- ///    
 float rad2deg(float rad)
 {
     return rad * 180.0 / M_PI;
@@ -42,17 +42,28 @@ float deg2rad(float deg)
 std::vector<float> move(std::vector<float> position, 
     float velocity, float heading_cmd, float dt)
 {
-    float x = position[0];
-    float y = position[1];
-    float theta = position[2];
 
-    x += velocity * cos(deg2rad(theta)) * dt;
-    y += velocity * sin(deg2rad(theta)) * dt;
-    theta += heading_cmd * dt;
+    position[0] += velocity * cos(position[2]) * dt;
+    position[1] += velocity * sin(position[2]) * dt;
+    position[2] += heading_cmd; //* dt;
 
-    return {x, y, theta};
+    return position;
 }
 
+void save_to_csv(std::vector<std::vector<float>> evader_positions, 
+    std::vector<std::vector<float>> pursuer_positions)
+{
+    FILE *f = fopen("pursuit.csv", "w");
+    fprintf(f, "evader_x,evader_y,evader_theta,pursuer_x,pursuer_y,pursuer_theta\n");
+    for (int i = 0; i < evader_positions.size(); i++)
+    {
+        fprintf(f, "%f,%f,%f,%f,%f,%f\n", 
+            evader_positions[i][0], evader_positions[i][1], evader_positions[i][2],
+            pursuer_positions[i][0], pursuer_positions[i][1], pursuer_positions[i][2]);
+    }
+
+    fclose(f);
+}
 
 // Main function
 int main()
@@ -62,21 +73,27 @@ int main()
     float dt = 0.05;
     int num_steps = int((end_time - start_time) / dt);
 
+    std::vector<float> pursuer_position = {
+        -15.0, // x
+        -15.0, // y
+        deg2rad(45.0) // theta
+    };
+
     std::vector<float> evader_position = {
         0.0, // x    
         0.0, // y
-        rad2deg(45.0) // theta
+        deg2rad(0.0) // theta
     };
 
-    std::vector<float> pursuer_position = {
-        0.0, // x
-        0.0, // y
-        rad2deg(0.0) // theta
-    };
 
+    // Used to store the positions of the evader and pursuer
+    std::vector<std::vector<float>> evader_positions;
+    std::vector<std::vector<float>> pursuer_positions;
+
+    // Simulator loop
     for (int i = 0; i <= num_steps; i++)
     {
-        // printf("Step %d\n", i);
+        // IMPLEMENT PURSUIT ALGORITHM
         std::vector<float> control_cmd = pure_pursuit_algorithm(
             evader_position, pursuer_position, dt);
 
@@ -86,11 +103,19 @@ int main()
         evader_position = move(evader_position, 
             EVADER_VELOCITY, 0.0, dt);
 
-        if (is_captured(evader_position, pursuer_position, CAPTURE_DISTANCE))
+        evader_positions.push_back(evader_position);
+        pursuer_positions.push_back(pursuer_position);
+
+        // IMPLEMENT DISTANCE CHECK
+        if (is_close(evader_position, pursuer_position, CAPTURE_DISTANCE))
         {
             printf("Captured at step %d\n", i);
             break;
         }
         
+        
     }
+
+    save_to_csv(evader_positions, pursuer_positions);
+
 }

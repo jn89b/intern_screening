@@ -21,6 +21,10 @@ from typing import List
 CAPTURE_DISTANCE: float = 2.0
 EVADER_VELOCITY: float = 5.0
 
+"""
+Implement the algorithm here
+"""
+
 
 def pure_pursuit_algorithm(pursuer_position: np.ndarray,
                            target_position: np.ndarray) -> tuple:
@@ -30,9 +34,9 @@ def pure_pursuit_algorithm(pursuer_position: np.ndarray,
     and a velocity command (magnitude) for now keep velocity constant
 
     """
-    # Calculate the heading command
+    # Calculate the heading command, keep velocity constant
     heading_cmd = 0.0
-    vel_cmd = 5.0
+    vel_cmd = 10.0
 
     return vel_cmd, heading_cmd
 
@@ -44,7 +48,8 @@ def is_close(pursuer_position: np.ndarray,
     return True if close
     """
 
-    pass
+    distance = 100
+    return False
 
 
 def move(position: np.ndarray,
