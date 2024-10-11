@@ -8,7 +8,7 @@ float CAPTURE_DISTANCE = 2.0;
 float EVADER_VELOCITY = 5.0;
 
 //// -------------- IMPLEMENTATION -------------------------------- ////
-// Implement the pure pursuit algorithm
+// Implement the pure pursuit algorithm units are in meters and radians
 std::vector<float> pure_pursuit_algorithm(
     std::vector<float> evader_position, 
     std::vector<float> pursuer_position, float dt)
@@ -27,7 +27,6 @@ bool is_close(std::vector<float> evader_position,
     return false;
 }
 
-
 /// --------------Helper functions ----------------------------------- ///    
 float rad2deg(float rad)
 {
@@ -39,10 +38,11 @@ float deg2rad(float deg)
     return deg * M_PI / 180.0;
 }
 
+// Move the position of the object given the velocity and heading command
+// units are in meters and radians
 std::vector<float> move(std::vector<float> position, 
     float velocity, float heading_cmd, float dt)
 {
-
     position[0] += velocity * cos(position[2]) * dt;
     position[1] += velocity * sin(position[2]) * dt;
     position[2] += heading_cmd; //* dt;
@@ -76,8 +76,8 @@ int main()
     int num_steps = int((end_time - start_time) / dt);
 
     std::vector<float> pursuer_position = {
-        -15.0, // x
-        -15.0, // y
+        -15.0, // x (meters)
+        -15.0, // y (meters)
         deg2rad(45.0) // theta
     };
 
