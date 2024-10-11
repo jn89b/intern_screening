@@ -51,15 +51,17 @@ std::vector<float> move(std::vector<float> position,
 }
 
 void save_to_csv(std::vector<std::vector<float>> evader_positions, 
-    std::vector<std::vector<float>> pursuer_positions)
+    std::vector<std::vector<float>> pursuer_positions, 
+    std::vector<std::vector<float>> control_cmds)
 {
     FILE *f = fopen("pursuit.csv", "w");
-    fprintf(f, "evader_x,evader_y,evader_theta,pursuer_x,pursuer_y,pursuer_theta\n");
+    fprintf(f, "evader_x,evader_y,evader_theta,pursuer_x,pursuer_y,pursuer_theta,vel_cmd,heading_cmd\n");
     for (int i = 0; i < evader_positions.size(); i++)
     {
-        fprintf(f, "%f,%f,%f,%f,%f,%f\n", 
+        fprintf(f, "%f,%f,%f,%f,%f,%f,%f,%f\n", 
             evader_positions[i][0], evader_positions[i][1], evader_positions[i][2],
-            pursuer_positions[i][0], pursuer_positions[i][1], pursuer_positions[i][2]);
+            pursuer_positions[i][0], pursuer_positions[i][1], pursuer_positions[i][2],
+            control_cmds[i][0], control_cmds[i][1]);
     }
 
     fclose(f);
@@ -85,10 +87,10 @@ int main()
         deg2rad(0.0) // theta
     };
 
-
     // Used to store the positions of the evader and pursuer
     std::vector<std::vector<float>> evader_positions;
     std::vector<std::vector<float>> pursuer_positions;
+    std::vector<std::vector<float>> control_cmds;
 
     // Simulator loop
     for (int i = 0; i <= num_steps; i++)
@@ -105,6 +107,7 @@ int main()
 
         evader_positions.push_back(evader_position);
         pursuer_positions.push_back(pursuer_position);
+        control_cmds.push_back(control_cmd);
 
         // IMPLEMENT DISTANCE CHECK
         if (is_close(evader_position, pursuer_position, CAPTURE_DISTANCE))
@@ -116,6 +119,6 @@ int main()
         
     }
 
-    save_to_csv(evader_positions, pursuer_positions);
+    save_to_csv(evader_positions, pursuer_positions, control_cmds);
 
 }

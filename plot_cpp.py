@@ -25,4 +25,13 @@ if __name__ == "__main__":
             label="evader heading", color="blue")
 
     ax.legend()
+
+    fig, ax = plt.subplots()
+    ax.plot(df["vel_cmd"], label="pursuer vel cmd", color="red")
+
+    fig, ax = plt.subplots()
+    ax.plot(df["heading_cmd"],
+            label="pursuer heading cmd", color="blue")
+
+    ax.legend()
     plt.show()
