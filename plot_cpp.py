@@ -28,6 +28,7 @@ if __name__ == "__main__":
 
     fig, ax = plt.subplots()
     ax.plot(df["vel_cmd"], label="pursuer vel cmd", color="red")
+    ax.legend()
 
     fig, ax = plt.subplots()
     ax.plot(df["heading_cmd"],
