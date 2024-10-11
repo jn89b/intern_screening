@@ -1,0 +1,1 @@
+g++ tech_question.cpp -o tech_question
